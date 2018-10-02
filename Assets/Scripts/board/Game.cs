@@ -68,6 +68,12 @@ public class Game
 
     }
 
+    public Game()
+    {
+
+    }
+
+
     public Player Player1
     {
         get

@@ -19,13 +19,7 @@ public class LocalController : MonoBehaviour
         }
     }
 
-    public void StartDiscovery()
-    {
-        NetworkManagerSpecific.Discovery.Initialize();
-        NetworkManagerSpecific.Discovery.StartAsClient();
-        _networkType = "LAN";
-        Debug.Log("Init discovery");
-    }
+    
     
 
 }

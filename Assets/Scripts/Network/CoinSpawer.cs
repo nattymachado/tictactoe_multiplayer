@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 public class CoinSpawer : NetworkBehaviour
 {
@@ -10,7 +11,7 @@ public class CoinSpawer : NetworkBehaviour
     private float _totalTime = 0;
     public Sprite coinPlayer1 = null;
     private float _initScaleX = 0;
-    private float _starter = 0;
+    private int _starter = 0;
     public Sprite coinPlayer2 = null;
     private GameObject _coinObj1;
 
@@ -53,66 +54,87 @@ public class CoinSpawer : NetworkBehaviour
         this._coinObj.transform.localScale = vec; // This is just to trigger the call to the OnSetScale while encapsulating.
     }
 
+    [ClientRpc]
+    public void RpcSetSprite(int number)
+    {
+        if (number == 2)
+        {
+            this._coinObj.GetComponent<SpriteRenderer>().sprite = coinPlayer1;
+        } else
+        {
+            this._coinObj.GetComponent<SpriteRenderer>().sprite = coinPlayer2;
+        } // This is just to trigger the call to the OnSetScale while encapsulating.
+    }
+
     public void Update()
     {
         if (!isServer)
             return;
+
         _totalTime += Time.deltaTime;
-        
-        if (_luckyNumber > 0 && NetworkManagerSpecific.singleton.numPlayers == 2)
+        if (NetworkManagerSpecific.singleton.numPlayers == 2)
         {
-            // _audioSource.enabled = true;
-        
-            float modTime = (_totalTime % 1);
-            if (modTime < 0.25)
+            if (_luckyNumber > 0)
             {
-                if (_coin.sprite == coinPlayer2)
+                // _audioSource.enabled = true;
+
+                float modTime = (_totalTime % 1);
+                if (modTime < 0.25)
                 {
-                    _luckyNumber -= 1;
+                    if (_coin.sprite == coinPlayer2)
+                    {
+                        _luckyNumber -= 1;
+                    }
+
+                    RpcSetSprite(1);
+                    RpcSetScale(new Vector3(_initScaleX, _coin.transform.localScale.y, 1f));
+
                 }
+                else if (modTime >= 0.25 && modTime < 0.50)
+                {
+                    RpcSetSprite(1);
+                    RpcSetScale(new Vector3(_initScaleX / 2f, _coin.transform.localScale.y, 1f));
 
-                _coin.sprite = coinPlayer1;
-                RpcSetScale(new Vector3(_initScaleX, _coin.transform.localScale.y, 1f));
+                }
+                else if (modTime >= 0.50 && modTime < 0.75)
+                {
+                    if (_coin.sprite == coinPlayer1)
+                    {
+                        _luckyNumber -= 1;
+                    }
+                    RpcSetSprite(2);
+                    RpcSetScale(new Vector3(_initScaleX, _coin.transform.localScale.y, 1f));
 
+                }
+                else
+                {
+                    RpcSetSprite(2);
+                    RpcSetScale(new Vector3(_initScaleX / 2f, _coin.transform.localScale.y, 1f));
+
+                }
             }
-            else if (modTime >= 0.25 && modTime < 0.50)
+            else
             {
-                _coin.sprite = coinPlayer1;
-                RpcSetScale( new Vector3(_initScaleX / 2f, _coin.transform.localScale.y, 1f));
-
-            }
-            else if (modTime >= 0.50 && modTime < 0.75)
-            {
+                // audioSource.enabled = false;
                 if (_coin.sprite == coinPlayer1)
                 {
-                    _luckyNumber -= 1;
+                    _starter = 1;
                 }
-                _coin.sprite = coinPlayer2;
-                RpcSetScale(new Vector3(_initScaleX, _coin.transform.localScale.y, 1f));
-
-            }
-            else
-            {
-                _coin.sprite = coinPlayer2;
-                RpcSetScale(new Vector3(_initScaleX / 2f, _coin.transform.localScale.y, 1f));
-
+                else
+                {
+                    _starter = 2;
+                }
+                BoardNetworkConfiguration  config = NetworkConfigurationGetter.getConfigurationObject();
+                config.Starter = _starter;
+                NetworkManagerSpecific.singleton.ServerChangeScene("BoardNetworkScene");
             }
         }
-        else
-        {
-            // audioSource.enabled = false;
-            if (_coin.sprite == coinPlayer1)
-            {
-                _starter = 1;
-            }
-            else
-            {
-                _starter = 2;
-            }
-            Debug.Log(_starter);
 
-        }
+        
+
     }
 
-    
+
+   
+
 }

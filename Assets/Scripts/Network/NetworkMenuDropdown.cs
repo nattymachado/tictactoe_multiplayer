@@ -7,11 +7,10 @@ public class NetworkMenuDropdown : MonoBehaviour {
     private Dropdown networkDropwork;
     public GameObject panelLan;
     public GameObject panelMatchMaker;
-    private LocalController _localController;
+    private BoardNetworkConfiguration configuration;
 
     void Start()
     {
-        Debug.Log("Iniciaiei");
 
         networkDropwork = GetComponent<Dropdown>();
         
@@ -26,8 +25,6 @@ public class NetworkMenuDropdown : MonoBehaviour {
         }
         networkDropwork.AddOptions(optionDataList);
         AddListeners();
-        _localController = NetworkConfigurationGetter.getConfigurationObject();
-
     }
 
     private void AddListeners()
@@ -46,7 +43,10 @@ public class NetworkMenuDropdown : MonoBehaviour {
             {
                 panelLan.SetActive(true);
                 panelMatchMaker.SetActive(false);
-                _localController.StartDiscovery();
+                NetworkManagerSpecific.StartDiscovery();
+                configuration = NetworkConfigurationGetter.getConfigurationObject();
+                configuration.NetworkType = "LAN";
+
             }
             else
             {

@@ -19,14 +19,14 @@ public class NetworkMenu : MonoBehaviour
     private List<NetworkBroadcastResult> _matches = new List<NetworkBroadcastResult>();
     private List<Dropdown.OptionData> _optionMatchesList = new List<Dropdown.OptionData>();
     private Dictionary<string, string> matchesData = new Dictionary<string, string>();
-    private LocalController _localController;
+    private BoardNetworkConfiguration _configuration;
 
 
     void Start()
     {
-        _localController = NetworkConfigurationGetter.getConfigurationObject();
-        AddListeners();
-        NetworkManagerSpecific.Discovery.Initialize();
+       AddListeners();
+       NetworkManagerSpecific.Discovery.Initialize();
+        _configuration = NetworkConfigurationGetter.getConfigurationObject();
 
 
     }
@@ -51,7 +51,7 @@ public class NetworkMenu : MonoBehaviour
 
     private void Update()
     {
-        if (!_isConnected && _localController.NetworkType == "LAN")
+        if (!_isConnected && _configuration.NetworkType == "LAN")
         {
             _timeToRefreshMatch -= Time.deltaTime;
             if (_timeToRefreshMatch < 0)
@@ -73,7 +73,6 @@ public class NetworkMenu : MonoBehaviour
 
             NetworkManagerSpecific.Discovery.StopBroadcast();
             _isConnected = true;
-            //LoadGameScene();
         }
       
 
@@ -83,7 +82,6 @@ public class NetworkMenu : MonoBehaviour
     private void RefreshMatches()
     {
         // filter matches
-        Debug.Log("Estou aqui");
         _matches.Clear();
         _optionMatchesList.Clear();
 

@@ -7,17 +7,28 @@ using UnityEngine.Networking;
 public class NetworkConfigurationGetter {
 
 
-    private static string _networkConfigurationZoneName = "ConfigurationNetworkZone";
 
-
-    public static LocalController getConfigurationObject()
+    public static BoardNetworkConfiguration getConfigurationObject()
     {
-        Debug.Log("Inicializei configuração 1");
-        Scene configurationZone = SceneManager.GetSceneByName(_networkConfigurationZoneName);
-        GameObject configurationObject = configurationZone.GetRootGameObjects()[0];
-        LocalController localConfiguration = configurationObject.GetComponent<LocalController>();
-        Debug.Log("Inicializei configuração");
-        return localConfiguration;
+        GameObject temp = null;
+        Debug.Log("1");
+        temp = new GameObject();
+        Debug.Log("2");
+        Object.DontDestroyOnLoad(temp);
+        Debug.Log("3");
+        UnityEngine.SceneManagement.Scene dontDestroyOnLoad = temp.scene;
+        GameObject[] g = dontDestroyOnLoad.GetRootGameObjects();
+        int position = 0;
+        for (int i = 0; i < dontDestroyOnLoad.rootCount; i++)
+        {
+            Debug.Log("Root: " + g[i].name);
+            if (g[i].name == "Configuration")
+            {
+                position = i;
+                break;
+            }
+        }
+        return dontDestroyOnLoad.GetRootGameObjects()[position].GetComponent<BoardNetworkConfiguration>();
     }
 
 

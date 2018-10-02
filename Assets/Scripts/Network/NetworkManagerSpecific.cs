@@ -54,6 +54,18 @@ public class NetworkManagerSpecific : NetworkManager {
         base.OnClientError(conn, errorCode);
     }
 
+    public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
+    {
+        Debug.Log("Connection ID:" + conn.connectionId);
+        GameObject player = (GameObject)Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
+        if (conn.connectionId > 0)
+        {
+            player.tag = "OtherPlayer";
+            Debug.Log("Changing tag");
+        }
+        NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
+    }
+
     public override void ServerChangeScene(string newSceneName)
     {
         Debug.Log("Trocando de página");
@@ -69,6 +81,11 @@ public class NetworkManagerSpecific : NetworkManager {
         ClientScene.AddPlayer(0);
     }
 
+    public static void StartDiscovery()
+    {
+        NetworkManagerSpecific.Discovery.Initialize();
+        NetworkManagerSpecific.Discovery.StartAsClient();
+    }
 
     /*
     // Use this for initialization

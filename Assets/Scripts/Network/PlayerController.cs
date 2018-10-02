@@ -29,6 +29,6 @@ public class PlayerController : NetworkBehaviour
 
     public override void OnStartLocalPlayer()
     {
-        GetComponent<SpriteRenderer>().color = Color.blue;
+        //gameObject.tag = "LocalPlayer";
     }
 }
