@@ -13,6 +13,7 @@ public class NetworkMenu : MonoBehaviour
     private bool _isConnected = false;
     public Button StartLanButton;
     public Button ConnectButton;
+    public Button StartLobbyButton;
     public float DiscoveryUpdatePeriod = 0.5f;
     private float _timeToRefreshMatch = 0;
     public Dropdown networkMatchesDropwork;
@@ -25,8 +26,10 @@ public class NetworkMenu : MonoBehaviour
     void Start()
     {
        AddListeners();
-       NetworkManagerSpecific.Discovery.Initialize();
+        
         _configuration = NetworkConfigurationGetter.getConfigurationObject();
+
+     
 
 
     }
@@ -40,6 +43,7 @@ public class NetworkMenu : MonoBehaviour
     {
         StartLanButton.onClick.AddListener(CreateLanMatch);
         ConnectButton.onClick.AddListener(OnClientConnectClicked);
+        StartLobbyButton.onClick.AddListener(CreateLobbyMatch);
     }
 
 
@@ -51,7 +55,7 @@ public class NetworkMenu : MonoBehaviour
 
     private void Update()
     {
-        if (!_isConnected && _configuration.NetworkType == "LAN")
+        if (!_isConnected )
         {
             _timeToRefreshMatch -= Time.deltaTime;
             if (_timeToRefreshMatch < 0)
@@ -84,24 +88,24 @@ public class NetworkMenu : MonoBehaviour
         // filter matches
         _matches.Clear();
         _optionMatchesList.Clear();
-
-        foreach (var match in NetworkManagerSpecific.Discovery.broadcastsReceived.Values)
+        if (NetworkManagerSpecific.Discovery)
         {
-            Debug.Log(match.broadcastData);
-            var matchId = Encoding.Unicode.GetString(match.broadcastData);
-            Debug.Log(matchId);
-            if (matchesData.ContainsKey(matchId))
+            foreach (var match in NetworkManagerSpecific.Discovery.broadcastsReceived.Values)
             {
-                continue;
+                Debug.Log(match.broadcastData);
+                var matchId = Encoding.Unicode.GetString(match.broadcastData);
+                Debug.Log(matchId);
+                if (matchesData.ContainsKey(matchId))
+                {
+                    continue;
+                }
+
+                _optionMatchesList.Add(new Dropdown.OptionData(matchId));
+
+                matchesData[matchId] = match.serverAddress;
             }
-
-            _optionMatchesList.Add(new Dropdown.OptionData(matchId));
-
-            matchesData[matchId] = match.serverAddress;
         }
-
-
-
+        
         networkMatchesDropwork.AddOptions(_optionMatchesList);
 
        
@@ -119,6 +123,12 @@ public class NetworkMenu : MonoBehaviour
 
         Debug.Log("Estou conectada");
         _isConnected = true;
+    }
+
+    public void CreateLobbyMatch()
+    {
+        //NetworkLobbyManagerSpecific.LobbyManager.MMCreateMatch();
+        NetworkLobbyManagerSpecific.LobbyManager.MMListMaches();
     }
 
 }

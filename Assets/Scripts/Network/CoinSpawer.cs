@@ -33,7 +33,7 @@ public class CoinSpawer : NetworkBehaviour
 
     public override void OnStartServer()
     {
-        _coinObj1 = Instantiate(coinPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity);
+        _coinObj1 = Instantiate(coinPrefab, new Vector3(0f,-2f, 0f), Quaternion.identity);
         NetworkServer.Spawn(_coinObj1);
         _coin = _coinObj1.GetComponent<SpriteRenderer>();
         _initScaleX = _coin.transform.localScale.x;

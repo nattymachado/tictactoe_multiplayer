@@ -182,7 +182,6 @@ public class BoardNetworkManager: NetworkBehaviour
         _configuration = NetworkConfigurationGetter.getConfigurationObject();
         
         _game = new Game(_player1, _player2);
-        SpriteRenderer currentPlayerSymbol = GameObject.Find("currentInfo").GetComponent<SpriteRenderer>();
         if (_configuration.Starter == 1)
         {
             SetCurrentPlayer(_player1, _game);

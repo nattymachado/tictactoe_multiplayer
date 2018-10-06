@@ -14,7 +14,14 @@ public class NetworkManagerSpecific : NetworkManager {
         get
         {
             Debug.Log("Getting");
-            return singleton.GetComponent<NetworkDiscovery>();
+            if (singleton)
+            {
+                return singleton.GetComponent<NetworkDiscovery>();
+            } else
+            {
+                return null;
+            }
+            
         }
     }
 
@@ -63,8 +70,11 @@ public class NetworkManagerSpecific : NetworkManager {
             player.tag = "OtherPlayer";
             Debug.Log("Changing tag");
         }
+        
         NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
     }
+
+    
 
     public override void ServerChangeScene(string newSceneName)
     {
@@ -87,12 +97,14 @@ public class NetworkManagerSpecific : NetworkManager {
         NetworkManagerSpecific.Discovery.StartAsClient();
     }
 
-    /*
+    
     // Use this for initialization
     void Start () {
-		
-	}
-	
+        NetworkManagerSpecific.Discovery.Initialize();
+        NetworkManagerSpecific.Discovery.StartAsClient();
+
+    }
+	/*
 	// Update is called once per frame
 	void Update () {
 		

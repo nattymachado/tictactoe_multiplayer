@@ -86,6 +86,7 @@ public class OptionsBehavior : MonoBehaviour {
         {
             Debug.Log(_nextSceneName);
             StartCoroutine(SceneLoader.LoadScene(_nextSceneName));
+            StartCoroutine(SceneLoader.LoadScene("ConfigurationNetworkLanZone"));
             StartCoroutine(SceneLoader.UnloadScene(_optionsSceneName));
         }
         
