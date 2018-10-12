@@ -5,6 +5,7 @@ using UnityEngine;
 public class BoardConfiguration : MonoBehaviour {
 
     private DifficultyOptions.Options _difficulty = DifficultyOptions.Options.Hard;
+    private NetworkOptions.Options _network = NetworkOptions.Options.Lan;
     private GameModeOption _gameModeOption = null;
     private int _starter = 0;
     private AudioSource _audio = null;
@@ -23,6 +24,18 @@ public class BoardConfiguration : MonoBehaviour {
         set
         {
             _difficulty = value;
+        }
+    }
+
+    public NetworkOptions.Options Network
+    {
+        get
+        {
+            return _network;
+        }
+        set
+        {
+            _network = value;
         }
     }
 

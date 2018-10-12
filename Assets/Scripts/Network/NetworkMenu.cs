@@ -9,29 +9,25 @@ public class NetworkMenu : MonoBehaviour
 {
 
 
-    private string _roomName = "";
     private bool _isConnected = false;
     public Button StartLanButton;
     public Button ConnectButton;
-    public Button StartLobbyButton;
     public float DiscoveryUpdatePeriod = 0.5f;
+    public InputField RoomNameInput;
     private float _timeToRefreshMatch = 0;
     public Dropdown networkMatchesDropwork;
     private List<NetworkBroadcastResult> _matches = new List<NetworkBroadcastResult>();
     private List<Dropdown.OptionData> _optionMatchesList = new List<Dropdown.OptionData>();
     private Dictionary<string, string> matchesData = new Dictionary<string, string>();
     private BoardNetworkConfiguration _configuration;
+    private BoardConfiguration _configurationGame;
 
 
     void Start()
     {
-       AddListeners();
-        
         _configuration = NetworkConfigurationGetter.getConfigurationObject();
-
-     
-
-
+        _configurationGame = BoardConfigurationGetter.getConfigurationObject();
+        AddListeners();
     }
 
     private void OnClientConnect(NetworkConnection conn)
@@ -41,9 +37,14 @@ public class NetworkMenu : MonoBehaviour
 
     private void AddListeners()
     {
-        StartLanButton.onClick.AddListener(CreateLanMatch);
-        ConnectButton.onClick.AddListener(OnClientConnectClicked);
-        StartLobbyButton.onClick.AddListener(CreateLobbyMatch);
+        if (_configurationGame.Network == NetworkOptions.Options.Lan)
+        {
+            StartLanButton.onClick.AddListener(CreateLanMatch);
+            ConnectButton.onClick.AddListener(OnClientConnectClicked);
+        } else
+        {
+           StartLanButton.onClick.AddListener(CreateLobbyMatch);
+        }
     }
 
 
@@ -55,16 +56,22 @@ public class NetworkMenu : MonoBehaviour
 
     private void Update()
     {
-        if (!_isConnected )
-        {
-            _timeToRefreshMatch -= Time.deltaTime;
-            if (_timeToRefreshMatch < 0)
+       if (!_isConnected)
             {
-                RefreshMatches();
+                _timeToRefreshMatch -= Time.deltaTime;
+                if (_timeToRefreshMatch < 0) { 
 
-                _timeToRefreshMatch = DiscoveryUpdatePeriod;
+                    if (_configurationGame && _configurationGame.Network == NetworkOptions.Options.Lan) {
+                        RefreshMatches();
+                    } else
+                    {
+                        ListLobbyMatches();
+                    }
+
+                    _timeToRefreshMatch = DiscoveryUpdatePeriod;
+                }
             }
-        }
+        
     }
 
     private void OnClientConnectClicked()
@@ -114,21 +121,28 @@ public class NetworkMenu : MonoBehaviour
     public void CreateLanMatch()
     {
         NetworkManagerSpecific.Discovery.StopBroadcast();
-
-        _roomName = "Natalia";
-        NetworkManagerSpecific.Discovery.broadcastData = "Natalia";
+        NetworkManagerSpecific.Discovery.broadcastData = RoomNameInput.text;
         NetworkManagerSpecific.Discovery.StartAsServer();
-
         NetworkManagerSpecific.singleton.StartHost();
-
-        Debug.Log("Estou conectada");
         _isConnected = true;
     }
 
     public void CreateLobbyMatch()
     {
-        //NetworkLobbyManagerSpecific.LobbyManager.MMCreateMatch();
-        NetworkLobbyManagerSpecific.LobbyManager.MMListMaches();
+        if (NetworkLobbyManagerSpecific.LobbyManager)
+        {
+            NetworkLobbyManagerSpecific.LobbyManager.MMCreateMatch(RoomNameInput.text);
+
+        }
+    }
+
+    public void ListLobbyMatches()
+    {
+        if (NetworkLobbyManagerSpecific.LobbyManager)
+        {
+            NetworkLobbyManagerSpecific.LobbyManager.MMListMaches(this.networkMatchesDropwork);
+        }
+        
     }
 
 }

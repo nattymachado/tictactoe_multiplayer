@@ -4,11 +4,15 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Networking.Match;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using System.Text;
 
 
 public class NetworkLobbyManagerSpecific : NetworkLobbyManager {
 
-    
+    private Dropdown networkMatchesDropwork;
+    private Dictionary<string, NetworkId > matchesData = new Dictionary<string, string>();
+    private List<Dropdown.OptionData> _optionMatchesList = new List<Dropdown.OptionData>();
 
     public void Start()
     {
@@ -20,7 +24,14 @@ public class NetworkLobbyManagerSpecific : NetworkLobbyManager {
         get
         {
             Debug.Log("Getting");
-            return singleton.GetComponent<NetworkLobbyManagerSpecific>();
+            if (singleton)
+            {
+                return singleton.GetComponent<NetworkLobbyManagerSpecific>();
+            } else
+            {
+                return null;
+            }
+            
         }
     }
 
@@ -39,9 +50,13 @@ public class NetworkLobbyManagerSpecific : NetworkLobbyManager {
         this.StartMatchMaker();
     }
 
-    public void MMListMaches()
+    public void MMListMaches(Dropdown listMatches)
     {
         Debug.Log("@ MMListMatches");
+        if (!networkMatchesDropwork)
+        {
+            networkMatchesDropwork = listMatches;
+        }
         this.matchMaker.ListMatches(0, 20, "", true, 0, 0, OnMatchList);
     }
 
@@ -53,18 +68,26 @@ public class NetworkLobbyManagerSpecific : NetworkLobbyManager {
         if (!success)
         {
             Debug.Log("Failed OnMatchList:" + extendedInfo);
+           
         } else
         {
-            Debug.Log("Success OnMatchList");
-            if (matchList.Count > 0)
+
+            _optionMatchesList.Clear();
+            foreach (var match in matchList)
             {
-                Debug.Log("First Match:" + matchList[0]);
-                MMJoinMatch(matchList[0]);
-            } else
-            {
-                Debug.Log("Not found matches");
-                MMCreateMatch();
+                Debug.Log(match.name);
+                if (matchesData.ContainsKey(match.name))
+                {
+                    continue;
+                }
+
+                _optionMatchesList.Add(new Dropdown.OptionData(match.name));
+
+                matchesData[match.name] = match.networkId;
+                _optionMatchesList.Add(new Dropdown.OptionData(match.name));
             }
+
+            networkMatchesDropwork.AddOptions(_optionMatchesList);
         }
     }
 
@@ -140,10 +163,10 @@ public class NetworkLobbyManagerSpecific : NetworkLobbyManager {
         }
     }
 
-    public void MMCreateMatch()
+    public void MMCreateMatch(String rooomName)
     {
         Debug.Log("@ MMCreateMatch");
-        this.matchMaker.CreateMatch("MM", 15, true, "", "", "", 0, 0, OnMatchCreate);
+        this.matchMaker.CreateMatch(rooomName, 15, true, "", "", "", 0, 0, OnMatchCreate);
     }
 
 

@@ -148,7 +148,7 @@ MonoBehaviour:
   m_RunInBackground: 1
   m_ScriptCRCCheck: 1
   m_MaxDelay: 0.01
-  m_LogLevel: 2
+  m_LogLevel: 1
   m_PlayerPrefab: {fileID: 0}
   m_AutoCreatePlayer: 1
   m_PlayerSpawnMethod: 0
@@ -198,8 +198,8 @@ MonoBehaviour:
     m_MaxTimerTimeout: 12000
     m_MinNetSimulatorTimeout: 1
     m_MaxNetSimulatorTimeout: 12000
-  m_Channels: 
-  m_UseWebSockets: 0
+  m_Channels: 0500000000000000
+  m_UseWebSockets: 1
   m_UseSimulator: 0
   m_SimulatedLatency: 1
   m_PacketLossPercentage: 0
@@ -211,7 +211,7 @@ MonoBehaviour:
   matchSize: 4
   isNetworkActive: 0
   matchMaker: {fileID: 0}
-  m_ShowLobbyGUI: 1
+  m_ShowLobbyGUI: 0
   m_MaxPlayers: 4
   m_MaxPlayersPerConnection: 1
   m_MinPlayers: 0
@@ -220,7 +220,7 @@ MonoBehaviour:
   m_GamePlayerPrefab: {fileID: 1184744038849462, guid: 458e6af3a7a201a4c9a48202f99f24c9,
     type: 2}
   m_LobbyScene: WhoStartSceneNetwork
-  m_PlayScene: WhoStartSceneNetwork
+  m_PlayScene: BoardNetworkScene
   lobbySlots: []
 --- !u!4 &370855566
 Transform:

@@ -5,10 +5,11 @@ using UnityEngine;
 public class PositionClickDetector : MonoBehaviour
 {
     public int positionId = 0;
+    public GameObject board;
 
     private void OnMouseDown()
     {
-        BoardManager boardManager = GetComponentInParent<BoardManager>();
-        boardManager.ClickBehavior(positionId);
+       BoardManager boardManager = board.GetComponent<BoardManager>();
+       boardManager.ClickBehavior(positionId);
     }
 }

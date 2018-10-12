@@ -15,8 +15,14 @@ public class BoardConfigurationGetter {
 
        
         Scene configurationZone = SceneManager.GetSceneByName(_configurationZoneName);
-        GameObject configurationObject = configurationZone.GetRootGameObjects()[0];
-        BoardConfiguration _boardConfiguration = configurationObject.GetComponent<BoardConfiguration>();
+        BoardConfiguration _boardConfiguration = null;
+        if (configurationZone.GetRootGameObjects().Length > 0)
+        {
+            GameObject configurationObject = configurationZone.GetRootGameObjects()[0];
+            _boardConfiguration =  configurationObject.GetComponent<BoardConfiguration>();
+            
+        }
+        
         return _boardConfiguration;
     }
 

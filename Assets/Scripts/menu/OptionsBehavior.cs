@@ -6,6 +6,8 @@ public class OptionsBehavior : MonoBehaviour {
 
     private Dropdown _gameModeDropdown;
     private Dropdown _difficultyDropdown;
+    private Dropdown _networkDropdown;
+    private Text _networkText;
     private Text _difficultyText;
     private Button _startButton;
     private BoardConfiguration _configuration;
@@ -39,6 +41,15 @@ public class OptionsBehavior : MonoBehaviour {
         _difficultyText = GameObject.Find("DifficultyText").GetComponent<Text>();
         _difficultyText.gameObject.SetActive(false);
 
+        _networkDropdown = GameObject.Find("NetworkDropdown").GetComponent<Dropdown>();
+        _networkDropdown.onValueChanged.AddListener(delegate {
+            NetworkDropdownChanged(_networkDropdown);
+        });
+
+        _networkDropdown.gameObject.SetActive(false);
+        _networkText = GameObject.Find("NetworkText").GetComponent<Text>();
+        _networkText.gameObject.SetActive(false);
+
         _startButton = GameObject.Find("StartButton").GetComponent<Button>();
         _startButton.onClick.AddListener(delegate {
             StartGame(_startButton);
@@ -58,12 +69,16 @@ public class OptionsBehavior : MonoBehaviour {
             {
                 _difficultyDropdown.gameObject.SetActive(true);
                 _difficultyText.gameObject.SetActive(true);
+                _networkDropdown.gameObject.SetActive(false);
+                _networkText.gameObject.SetActive(false);
                 _nextSceneName = _whoStartSceneName;
             }
             else
             {
                 _difficultyDropdown.gameObject.SetActive(false);
                 _difficultyText.gameObject.SetActive(false);
+                _networkDropdown.gameObject.SetActive(true);
+                _networkText.gameObject.SetActive(true);
                 _nextSceneName = _networkSceneName;
             }
             _configuration.GameModeOption = new GameModeOption(dropdown.options[dropdown.value].text, dropdown.value);
@@ -71,6 +86,8 @@ public class OptionsBehavior : MonoBehaviour {
         {
             _difficultyDropdown.gameObject.SetActive(false);
             _difficultyText.gameObject.SetActive(false);
+            _networkDropdown.gameObject.SetActive(false);
+            _networkText.gameObject.SetActive(false);
             _configuration.GameModeOption = null;
         }
     }
@@ -80,13 +97,25 @@ public class OptionsBehavior : MonoBehaviour {
         _configuration.Difficulty = (DifficultyOptions.Options) dropdown.value;
     }
 
+    private void NetworkDropdownChanged(Dropdown dropdown)
+    {
+        _configuration.Network = (NetworkOptions.Options)dropdown.value;
+    }
+
     private void StartGame(Button startButton)
     {
         if (_configuration.GameModeOption != null)
         {
             Debug.Log(_nextSceneName);
             StartCoroutine(SceneLoader.LoadScene(_nextSceneName));
-            StartCoroutine(SceneLoader.LoadScene("ConfigurationNetworkLanZone"));
+            if (_configuration.Network == NetworkOptions.Options.Lan)
+            {
+                StartCoroutine(SceneLoader.LoadScene("ConfigurationNetworkLanZone"));
+            } else
+            {
+                StartCoroutine(SceneLoader.LoadScene("ConfigurationNetworkLobbyZone"));
+            }
+            
             StartCoroutine(SceneLoader.UnloadScene(_optionsSceneName));
         }
         
